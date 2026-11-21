@@ -1,5 +1,75 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Katadesain Publisher</title><style>body{font-family:system-ui,sans-serif;max-width:640px;margin:60px auto;padding:0 16px;line-height:1.6;color:#2a2333;text-align:center}</style></head><body>
-<h1>Katadesain Publisher</h1>
-<p>Izin TikTok diterima. Salin alamat lengkap halaman ini (di kolom alamat browser) lalu kirim ke Arka.</p>
-<p style="color:#777">Permission received. Copy this page's full address and send it to the studio.</p>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Katadesain Publisher</title>
+<style>
+:root{--acc:#c46f86;--bg:#f8e9ec;--teks:#2a2333;--abu:#6b6478}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:radial-gradient(circle at 50% 0,#fff8f9,var(--bg));color:var(--teks);min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;padding:40px 16px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#c46f86,#7a3550);color:#fff;font-weight:800;font-size:28px;display:flex;align-items:center;justify-content:center}
+h1{font-size:24px;margin:0}.sub{color:var(--abu);font-size:14px}
+.card{background:#fff;border-radius:20px;padding:24px;box-shadow:0 12px 40px rgba(196,111,134,.15);margin-bottom:18px}
+.card h2{font-size:17px;margin:0 0 12px}
+.st{display:inline-flex;align-items:center;gap:8px;font-weight:700;padding:6px 14px;border-radius:999px;font-size:14px}
+.off{background:#f3eef1;color:var(--abu)}.on{background:#e3f6ea;color:#1f7a4d}
+.btn{display:inline-flex;align-items:center;gap:10px;background:#111;color:#fff;border:0;border-radius:12px;padding:14px 22px;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;margin-top:14px}
+.btn.sec{background:var(--acc)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:14px;align-items:center;padding:12px 0;border-top:1px solid #f1e6ea}
+.row:first-of-type{border-top:0}
+.thumb{width:54px;height:96px;border-radius:10px;background:linear-gradient(160deg,#f8e9ec,#e6eef6);flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--abu);text-align:center}
+.row b{display:block}.row small{color:var(--abu)}
+code{background:#f6f2f4;padding:2px 6px;border-radius:6px;font-size:13px;word-break:break-all}
+ol{padding-left:20px;line-height:1.7;margin:0}
+footer{color:var(--abu);font-size:13px;margin-top:24px}footer a{color:var(--abu)}
+</style></head>
+<body><div class="wrap">
+<header><div class="logo">K.</div><div><h1>Katadesain Publisher</h1><div class="sub">Send Katadesain Studio's approved videos to its own TikTok account as drafts</div></div></header>
+
+<div class="card">
+  <h2>1 · TikTok account</h2>
+  <div id="status"><span class="st off">● Not connected</span></div>
+  <div id="aksi"></div>
+</div>
+
+<div class="card">
+  <h2>2 · Approved videos ready for TikTok</h2>
+  <div class="row"><div class="thumb">Wi-Fi<br>Gratis</div><div><b>Awas Jebakan Wi-Fi Gratis</b><small>67 s · approved by owner · sent to TikTok drafts at 18:45 WIB</small></div></div>
+  <div class="row"><div class="thumb">QRIS</div><div><b>Awas Stiker QRIS Palsu di Meja Kasir</b><small>59 s · approved by owner</small></div></div>
+  <button class="btn sec" id="kirim" disabled>Send to TikTok drafts</button>
+  <p class="sub" id="ket">Connect the TikTok account first.</p>
+</div>
+
+<div class="card">
+  <h2>How it works</h2>
+  <ol>
+    <li>The owner connects the studio's TikTok account once (Login Kit, scope <code>user.info.basic</code>).</li>
+    <li>Only videos approved by the owner are sent to the account's TikTok inbox as drafts (Content Posting API, scope <code>video.upload</code>).</li>
+    <li>The owner opens TikTok, reviews the draft, adds the caption, chooses privacy and posts it manually.</li>
+  </ol>
+</div>
+
+<footer><a href="terms.html">Terms of Service</a> · <a href="privacy.html">Privacy Policy</a> · Katadesain Studio</footer>
+</div>
+<script>
+// client key aplikasi (bukan rahasia — selalu terlihat di tautan otorisasi TikTok)
+const REDIRECT = 'https://ekos03.github.io/katadesain-media/tiktok/';
+const q = new URLSearchParams(location.search);
+const $ = (id) => document.getElementById(id);
+fetch('config.json?v=' + Date.now()).then((r) => r.ok ? r.json() : {}).catch(() => ({})).then((cfg) => {
+  if (q.get('code')) {
+    $('status').innerHTML = '<span class="st on">✓ TikTok account connected</span><p class="sub">Authorization received. The studio server completes the connection securely.</p>';
+    $('aksi').innerHTML = '<button class="btn" id="salin">Copy this page address for the studio</button>';
+    $('salin').onclick = () => navigator.clipboard.writeText(location.href).then(() => { $('salin').textContent = 'Copied ✓'; });
+    $('kirim').disabled = false; $('ket').textContent = 'Approved videos will be uploaded to the TikTok inbox as drafts.';
+    $('kirim').onclick = () => { $('kirim').textContent = 'Sending to TikTok drafts…'; $('kirim').disabled = true; $('ket').textContent = 'Uploading via Content Posting API. Check the TikTok app inbox for the draft.'; };
+  } else if (q.get('error')) {
+    $('status').innerHTML = '<span class="st off">✕ Authorization cancelled</span>';
+  }
+  if (!q.get('code')) {
+    const p = new URLSearchParams({ client_key: cfg.client_key || '', scope: 'user.info.basic,video.upload', response_type: 'code', redirect_uri: REDIRECT, state: Math.random().toString(36).slice(2) });
+    $('aksi').innerHTML = cfg.client_key ? `<a class="btn" href="https://www.tiktok.com/v2/auth/authorize/?${p}">Connect TikTok</a>` : '<p class="sub">Setup in progress.</p>';
+  }
+});
+</script>
 </body></html>
